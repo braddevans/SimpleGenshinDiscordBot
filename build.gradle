@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+}
+
+group 'uk.co.breadhub'
+version '1.0-SNAPSHOT'
+
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io/' }
+    maven { url 'https://repo.wea-ondara.net/repository/public/' }
+    maven { url "http://maven.elmakers.com/repository/" }
+    maven { url "http://repo.howaner.de/" }
+    maven { url "https://libraries.minecraft.net/" }
+    maven { url "https://repository.ow2.org/nexus/content/repositories/releases/" }
+    maven { url "http://repo.dmulloy2.net/nexus/repository/releases/" }
+    maven { url "https://maven.enginehub.org/repo/" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "https://nexus.breadhub.co.uk/repository/maven-releases/" }
+    maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
+    maven { url "https://repo.spring.io/plugins-release/" }
+    mavenCentral()
+}
+
+configurations {
+    external
+}
+
+dependencies {
+    external group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    external group: 'com.google.guava', name: 'guava', version: '21.0'
+    external group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+    external group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.2.2'
+    external('com.jagrosh:jda-utilities:3.0.5')
+    external('com.jagrosh:jda-utilities-command:3.0.5')
+    external('net.dv8tion:JDA:4.2.0_222') {
+        exclude module: 'opus-java'
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    configurations.compile.extendsFrom(configurations.external)
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    from sourceSets.main.output
+    from {
+        configurations.external.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
